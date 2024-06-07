@@ -1,7 +1,8 @@
 // File name: statos.c  
-// Made for the Orange Pi Zero 3 and/or Orange pi pc plus computers. 
+// Made for the Orange Pi Zero 3 and/or Orange pi pc plus computers.
+//Rewrite for the cromebook Lean, mean, amazing machine.
 
-// header liberys for this project. 
+// header liberys for this project.
 #include <sys/sysinfo.h>
 #include <sys/types.h>
 #include <stdio.h>
@@ -9,6 +10,65 @@
 #include <string.h>
 #include <unistd.h>
 #include <grp.h>
+
+// Do our functions get system stats
+void print_cpu_info() {
+    FILE *cpuinfo = fopen("/proc/cpuinfo", "r");
+
+    if (cpuinfo == NULL) {
+        perror("Error opening /proc/cpuinfo");
+        return;
+    }
+
+    char line[128];
+
+    // Variables to track CPU information
+    char cpuType[64] = "";
+    int coreCount = 0;
+
+    // Read /proc/cpuinfo line by line
+    while (fgets(line, sizeof(line), cpuinfo)) {
+        // Extract CPU type
+        if (strstr(line, "model name") != NULL) {
+            sscanf(line, "model name : %[^\n]", cpuType);
+        }
+
+        // Count CPU cores
+        if (strstr(line, "processor") != NULL) {
+            coreCount++;
+        }
+    }
+
+    // Close the file
+    fclose(cpuinfo);
+
+    // Display CPU information
+    printf("║CPU Type: %s\n", cpuType);
+    printf("║Number of Cores: %d\n", coreCount);
+}
+
+void get_memory_usage(double *total, double *used, double *free) {
+    FILE *meminfo = fopen("/proc/meminfo", "r");
+
+    if (meminfo == NULL) {
+        perror("Error opening /proc/meminfo");
+        return;
+    }
+
+    char line[128];
+
+    while (fgets(line, sizeof(line), meminfo)) {
+        double value;
+        if (sscanf(line, "MemTotal: %lf kB", &value) == 1) {
+            *total = value;
+        } else if (sscanf(line, "MemFree: %lf kB", &value) == 1) {
+            *free = value;
+        }
+    }
+
+    fclose(meminfo);
+}
+
 
 int main() {
   struct sysinfo sys_info;
@@ -53,16 +113,28 @@ char path[40];
 int cpu_count = 0;
 printf("║ \n");
 while(1) {
-sprintf(path, "/sys/class/thermal/thermal_zone%d/temp", cpu_count);
+sprintf(path, "/sys/class/cpuid/cpu%d", cpu_count);
 file = fopen(path, "r");
 if (file == NULL) { break; }
 int temperature;
 fscanf(file, "%d", &temperature);
 fclose(file);
-printf("║CPU/CORE %d Temperature: %.2f C\n", cpu_count, temperature / 1000.0);
 cpu_count++;
 }
-printf("║Total cpus/cores %d\n", cpu_count);
+   printf("║Checking cpuid total %d\n", cpu_count);
+   double total_memory, used_memory, free_memory;
 
+    // Get memory usage information
+    get_memory_usage(&total_memory, &used_memory, &free_memory);
+
+    // Calculate memory percentages
+    double used_percentage = (used_memory / total_memory) * 100;
+    double free_percentage = (free_memory / total_memory) * 100;
+
+    // Display memory information
+    printf("║Total Memory: %.2lf kB\n", total_memory);
+    //printf("║Used Memory: %.2lf kB (%.2lf%%)\n", used_memory, used_percentage);
+    printf("║Free Memory: %.2lf kB (%.2lf%%)\n", free_memory, free_percentage);
+    print_cpu_info();
     return 0;
 }
