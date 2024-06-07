@@ -1,6 +1,9 @@
 # ArchLinux_GCC_toolchain
+# Orange PI Zero 3 - Aarch Linux / Ubuntu 
+
 ANSI C terminal programs for the "orange pi zero 3" running Arch Linux. 
 In this era of user-friendly, one-size-fits-all operating systems, Arch Linux stands as a beacon of choice, flexibility, and simplicity. 
+
 It is a distribution that does not hold your hand, but rather empowers you to sculpt your digital world to your exact specifications. 
 With Arch Linux, you are the architect of your computing experience, and this freedom is both its beauty and its challenge.
 
@@ -33,7 +36,7 @@ Video Output: It features an HDMI output for connecting to a monitor or TV.
 Audio: There's a 3.5mm audio jack for audio output, and some variants may have onboard microphones.
 
 Operating System: 
-It supports various Linux distributions other then Arch, including Armbian and Raspbian, 
+It supports various Linux distributions other then Arch, including Armbian / Ubuntu and Raspbian, 
 and can be used for a variety of applications such as a low-power server, media center, or IoT device. 
 (TESTED) Arch Linux works fully with the WiFi/Bluetooth chip.  Armbian is really buggy works with USB WiFi only! 
 
